@@ -1,0 +1,7 @@
+build/
+Konechi.app/
+.DS_Store
+Vendor/
+
+# 検討用に作り直せる画像
+docs/*.png
