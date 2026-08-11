@@ -6,6 +6,8 @@ cd "$(dirname "$0")"
 
 APP="Konechi.app"
 TARGET="arm64-apple-macos14.0"
+# リリース時は release.sh から渡される。手元のビルドでは 0.0.0 のままでよい
+VERSION="${KONECHI_VERSION:-0.0.0}"
 SPARKLE_VERSION="2.9.5"
 
 # 自動更新に Sparkle を使う。framework は大きいのでリポジトリに置かず、
@@ -48,7 +50,7 @@ if [ -d Resources ]; then
   cp -R Resources/. "$APP/Contents/Resources/"
 fi
 
-cat > "$APP/Contents/Info.plist" <<'PLIST'
+cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -56,10 +58,10 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
   <key>CFBundleName</key><string>Konechi</string>
   <key>CFBundleDisplayName</key><string>Konechi</string>
   <key>CFBundleExecutable</key><string>Konechi</string>
-  <key>CFBundleIdentifier</key><string>local.konechi</string>
+  <key>CFBundleIdentifier</key><string>io.kkweb.konechi</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>${VERSION}</string>
+  <key>CFBundleVersion</key><string>${VERSION}</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <!-- Dock とアプリ切替に出さず、メニューバーだけに常駐させる -->
   <key>LSUIElement</key><true/>
