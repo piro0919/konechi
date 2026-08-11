@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
+import { M_PLUS_Rounded_1c } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
+
+// 丸ゴシック。角の取れた字面が、キャラの太い輪郭と揃う
+const rounded = M_PLUS_Rounded_1c({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-rounded",
+  weight: ["400", "500", "700", "800", "900"],
+});
 
 type LayoutProps = {
   children: ReactNode;
@@ -27,7 +36,14 @@ export async function generateMetadata({
     metadataBase: new URL("https://konechi.kkweb.io"),
     openGraph: {
       description: t("description"),
-      images: ["/icon.png"],
+      images: ["/lp-og.png"],
+      title: t("title"),
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      description: t("description"),
+      images: ["/lp-og.png"],
       title: t("title"),
     },
     title: t("title"),
@@ -43,8 +59,8 @@ export default async function Layout({ children, params }: LayoutProps) {
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
-      <body className="antialiased">
+    <html className={rounded.variable} lang={locale}>
+      <body className="font-[family-name:var(--font-rounded)] antialiased">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

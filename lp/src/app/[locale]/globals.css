@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #f9ebdf;
+  --color-cream: #fbf1e6;
+  --color-cream-deep: #f5e3d0;
   --color-ink: #3a1420;
   --color-pink: #f4699b;
   --color-pink-deep: #d94b7f;
+  --color-pink-soft: #ffd9e6;
+  /* イラストの中で使われている青。ページ側でも拾ってアクセントにする */
+  --color-sky: #59c3f0;
+  --color-blue: #2f7fe0;
 }
 
 html {
@@ -14,4 +19,27 @@ html {
 body {
   background: var(--color-cream);
   color: var(--color-ink);
+}
+
+/* 見出しの下に引くマーカー。太さと位置は文字に対して固定 */
+.marker {
+  background-image: linear-gradient(transparent 62%, var(--color-pink-soft) 62%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  padding-inline: 0.15em;
+}
+
+/* 背景に敷く水玉。うるさくならないよう薄く、広めの間隔で */
+.dots {
+  background-image: radial-gradient(var(--color-cream-deep) 2px, transparent 2px);
+  background-size: 22px 22px;
+}
+
+/* ぼかした色の塊。区画の隅に置いて単色を崩す */
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.5;
+  pointer-events: none;
 }
