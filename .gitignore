@@ -6,3 +6,9 @@ Vendor/
 
 # 検討用に作り直せる画像
 docs/*.png
+
+# ランディングページ
+lp/node_modules/
+lp/.next/
+lp/tsconfig.tsbuildinfo
+node_modules/

@@ -1,0 +1,8 @@
+{
+  "name": "konechi",
+  "private": true,
+  "scripts": {
+    "lp:dev": "pnpm --filter konechi-lp dev",
+    "lp:build": "pnpm --filter konechi-lp build"
+  }
+}

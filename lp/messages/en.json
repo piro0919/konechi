@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "title": "Konechi — see whether you are on ethernet or Wi-Fi",
+    "description": "A tiny macOS menu bar app that shows, at a glance, whether your Mac is connected by cable or over Wi-Fi."
+  },
+  "hero": {
+    "tagline": "Cable or Wi-Fi, at a glance",
+    "lead": "macOS only tells you about Wi-Fi. Konechi sits in your menu bar and shows which link is actually carrying your traffic.",
+    "download": "Download for macOS",
+    "requirement": "macOS 14 or later, Apple silicon",
+    "source": "View the source"
+  },
+  "states": {
+    "title": "She reacts to your connection",
+    "lead": "On top form when the cable is in, doing fine on Wi-Fi, out of energy when nothing is connected.",
+    "wired": "Wired",
+    "wifi": "Wi-Fi",
+    "offline": "Offline"
+  },
+  "features": {
+    "title": "What it tells you",
+    "truth": {
+      "title": "The link actually in use",
+      "body": "It reads the primary interface of the default route from the system itself, rather than guessing. Plug in a cable while Wi-Fi is still on and it switches immediately."
+    },
+    "details": {
+      "title": "The details, one click away",
+      "body": "Service name, device, IP address, router and link speed. Throughput is measured every second, but only while the menu is open."
+    },
+    "vpn": {
+      "title": "VPN, without losing the link",
+      "body": "When your traffic runs through a tunnel, a padlock appears over the physical link underneath — so you still know whether you are on cable or Wi-Fi."
+    },
+    "quiet": {
+      "title": "Out of the way",
+      "body": "No dock icon, no window, no account. Launch at login, pick your language and units, and hide any row you do not care about."
+    }
+  },
+  "install": {
+    "title": "Installing",
+    "body": "Konechi is signed ad-hoc rather than notarised, so the first launch is met with an \"unidentified developer\" warning. Open System Settings, go to Privacy & Security, and allow it. After that it updates itself.",
+    "cta": "Download the latest release"
+  },
+  "footer": {
+    "source": "Source",
+    "releases": "Releases"
+  }
+}
