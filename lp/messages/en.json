@@ -10,6 +10,10 @@
     "requirement": "macOS 14 or later, Apple silicon",
     "source": "View the source"
   },
+  "shots": {
+    "title": "What it looks like",
+    "lead": "A small face in the menu bar; click it for the details. Settings stay short."
+  },
   "states": {
     "title": "She reacts to your connection",
     "lead": "On top form when the cable is in, doing fine on Wi-Fi, out of energy when nothing is connected.",
