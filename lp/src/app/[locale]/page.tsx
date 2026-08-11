@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { LanguageSwitch } from "./language-switch";
 
 const REPO = "https://github.com/piro0919/konechi";
 const DOWNLOAD = `${REPO}/releases/latest`;
@@ -84,9 +85,12 @@ export default async function Page({ params }: PageProps) {
         />
         <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-12 lg:flex-row">
           <div className="flex flex-1 flex-col items-center gap-6 text-center lg:items-start lg:text-left">
-            <span className="rounded-full border-2 border-[var(--color-pink)] bg-white px-4 py-1 text-sm font-bold text-[var(--color-pink-deep)]">
-              macOS
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border-2 border-[var(--color-pink)] bg-white px-4 py-1 font-bold text-[var(--color-pink-deep)] text-sm">
+                macOS
+              </span>
+              <LanguageSwitch />
+            </div>
             <h1 className="text-balance text-4xl font-black leading-[1.35] tracking-tight sm:text-[2.75rem]">
               <span className="marker">{tagline}</span>
             </h1>

@@ -54,7 +54,13 @@ system is set to Japanese.
 ./preview.sh <png>…     # render artwork at its real menu bar size
 ./mockup.sh             # regenerate the SF Symbols comparison sheet
 ./Tools/trim.py <png>…  # crop transparent margins using one shared box
+./Tools/make-icon.py <squircle.png>   # build the app icon from the character
+./Tools/compress.sh     # shrink every PNG with pngquant
 ```
+
+The app icon must be a **fully opaque square** — macOS 26 rounds the corners
+itself, and any transparency makes it place the icon on a grey plate instead.
+`make-icon.py` takes care of that.
 
 The app itself takes flags for inspecting states you cannot easily reproduce.
 
@@ -69,6 +75,17 @@ The app itself takes flags for inspecting states you cannot easily reproduce.
 Drop the images in `Resources/konechi-<state>.png`. Anything missing falls back
 to an SF Symbol, so the app runs with none of them present. The prompts used to
 generate them live in [docs/art-prompt.md](docs/art-prompt.md).
+
+## Landing page
+
+`lp/` holds the site published at <https://konechi.kkweb.io> — Next.js with
+next-intl, Japanese and English. It lives in this repository so a release and
+the wording that describes it land in the same commit.
+
+```bash
+pnpm install
+pnpm --filter konechi-lp dev
+```
 
 ## Design decisions
 

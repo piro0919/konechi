@@ -7,12 +7,7 @@
     "tagline": "Cable or Wi-Fi, at a glance",
     "lead": "You plugged the cable in, but you are still on Wi-Fi — and nothing on screen tells you. Konechi keeps the connection you are actually using visible in your menu bar.",
     "download": "Download — free",
-    "requirement": "macOS 14 or later, Apple silicon",
-    "source": "View the source"
-  },
-  "shots": {
-    "title": "What it looks like",
-    "lead": "A small face in the menu bar; click it for the details."
+    "requirement": "macOS 14 or later, Apple silicon"
   },
   "states": {
     "title": "She reacts to your connection",
@@ -48,5 +43,9 @@
   "footer": {
     "source": "Source",
     "releases": "Past updates"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English"
   }
 }

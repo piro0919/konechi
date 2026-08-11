@@ -12,3 +12,5 @@ lp/node_modules/
 lp/.next/
 lp/tsconfig.tsbuildinfo
 node_modules/
+lp/public/sitemap*.xml
+lp/public/robots.txt

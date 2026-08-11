@@ -7,12 +7,7 @@
     "tagline": "有線か Wi-Fi か、一目で",
     "lead": "ケーブルを挿したのに、実は Wi-Fi のまま。Mac の画面からはそれが分かりません。Konechi はいま本当に使われている方を、メニューバーにずっと出しておきます。",
     "download": "ダウンロード（無料）",
-    "requirement": "macOS 14 以降、Apple シリコンの Mac",
-    "source": "ソースを見る"
-  },
-  "shots": {
-    "title": "使っているところ",
-    "lead": "メニューバーに小さく居て、押すと中身が出ます。"
+    "requirement": "macOS 14 以降、Apple シリコンの Mac"
   },
   "states": {
     "title": "接続に合わせて表情が変わります",
@@ -48,5 +43,9 @@
   "footer": {
     "source": "ソース",
     "releases": "これまでの更新"
+  },
+  "language": {
+    "ja": "日本語",
+    "en": "English"
   }
 }
