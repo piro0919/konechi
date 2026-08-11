@@ -12,6 +12,9 @@ import Sparkle
 final class Updater: NSObject, SPUUpdaterDelegate {
     static let shared = Updater()
 
+    /// 起動時の確認で更新が見つかったか。画面を出すのは確認が終わってから
+    private var foundUpdate = false
+
     private lazy var controller = SPUStandardUpdaterController(
         startingUpdater: true, updaterDelegate: self, userDriverDelegate: nil)
 
@@ -28,8 +31,31 @@ final class Updater: NSObject, SPUUpdaterDelegate {
 
     // MARK: - SPUUpdaterDelegate
 
-    /// 黙って確認した結果、更新があった。ここで初めて画面を出す
+    /// 黙って確認した結果、更新があった。
+    /// ここで画面を出そうとしても、確認の最中なので Sparkle に捨てられる。
+    /// 覚えておいて、確認が終わってから改めて頼む
     func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
-        controller.updater.checkForUpdates()
+        log("更新が見つかりました: \(item.displayVersionString)")
+        foundUpdate = true
+    }
+
+    /// 確認が終わった。見つからなかった場合や失敗した場合もここに来る
+    func updater(
+        _ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck,
+        error: (any Error)?
+    ) {
+        log("確認が終わりました: \(error.map { "\($0)" } ?? "問題なし")")
+        guard foundUpdate else { return }
+        foundUpdate = false
+
+        DispatchQueue.main.async { [weak self] in
+            self?.log("画面を出します")
+            self?.checkNow()
+        }
+    }
+
+    private func log(_ text: String) {
+        guard CommandLine.arguments.contains("--diag") else { return }
+        FileHandle.standardError.write("updater: \(text)\n".data(using: .utf8)!)
     }
 }
