@@ -43,6 +43,22 @@ swiftc \
   Sources/Localization.swift Sources/Link.swift Sources/Icon.swift \
   Sources/Settings.swift Sources/Updater.swift Sources/SettingsWindow.swift Sources/main.swift
 
+# アプリ本体のアイコン。元絵があれば .icns を組み立てる。
+# 無くてもビルドは通る（Finder では白紙のままになる）
+if [ -f Resources/konechi-icon.png ]; then
+  ICONSET="build/Konechi.iconset"
+  rm -rf "$ICONSET"
+  mkdir -p "$ICONSET"
+  for size in 16 32 128 256 512; do
+    sips -z $size $size Resources/konechi-icon.png \
+      --out "$ICONSET/icon_${size}x${size}.png" >/dev/null
+    sips -z $((size * 2)) $((size * 2)) Resources/konechi-icon.png \
+      --out "$ICONSET/icon_${size}x${size}@2x.png" >/dev/null
+  done
+  mkdir -p "$APP/Contents/Resources"
+  iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/Konechi.icns"
+fi
+
 # キャラの絵は Resources に konechi-<状態>.png で置く。無ければ記号で代用されるので、
 # ディレクトリが空でもビルドは通る
 if [ -d Resources ]; then
@@ -58,6 +74,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>CFBundleName</key><string>Konechi</string>
   <key>CFBundleDisplayName</key><string>Konechi</string>
   <key>CFBundleExecutable</key><string>Konechi</string>
+  <key>CFBundleIconFile</key><string>Konechi</string>
   <key>CFBundleIdentifier</key><string>io.kkweb.konechi</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>${VERSION}</string>
