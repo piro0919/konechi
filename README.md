@@ -1,73 +1,85 @@
-# Konechi（コネち）
+# Konechi
 
-いま Mac が **有線接続か Wi-Fi 接続か**をメニューバーに常時表示する、小さな常駐アプリです。
+A tiny macOS menu bar app that shows, at a glance, whether your Mac is on
+**ethernet or Wi-Fi**.
 
-macOS 標準のメニューバーは Wi-Fi の状態しか表さず、有線がつながっているかは分かりません。
-Konechi はアイコンの見た目から推測するのではなく、システム構成データベース
-（`State:/Network/Global/IPv4`）が持つ**デフォルト経路のインターフェース**を読み、
-そのインターフェースの種別が Wi-Fi か Ethernet かで判定します。
-`route get default` が示すものと同じ経路を見ているので、実際に通信に使われている側が出ます。
+The stock macOS menu bar only tells you about Wi-Fi — nothing indicates that a
+cable is plugged in. Konechi does not guess from what the menu bar looks like.
+It reads the **primary interface of the default route** from the system
+configuration database (`State:/Network/Global/IPv4`) and decides from that
+interface's type. It is looking at the same route `route get default` reports,
+so what you see is the link actually carrying your traffic.
 
-状態はキャラクターの表情で表します。有線が絶好調、Wi-Fi が好調、未接続が絶不調。
-VPN を通っているときは、下の物理経路の顔に鍵のバッジが乗ります。
+The state is expressed through a character's face: on top form for ethernet,
+doing fine for Wi-Fi, out of energy when offline. When the route runs through
+a VPN, a padlock badge sits on the face of the physical link underneath.
 
-## ビルド
+## Build
 
-Xcode 本体は不要です。Command Line Tools の Swift だけでビルドできます。
-自動更新に使う Sparkle は、初回のビルド時に `Vendor/` へ取得します。
+Xcode is not required — the Swift that ships with the Command Line Tools is
+enough. Sparkle, used for updates, is fetched into `Vendor/` on the first
+build.
 
 ```bash
 ./build.sh
 open Konechi.app
 ```
 
-## メニューの中身
+## What the menu shows
 
-| 行           | 内容                                             |
-| ------------ | ------------------------------------------------ |
-| 接続         | 有線 / Wi-Fi / その他 / 未接続。VPN 経由なら明記 |
-| サービス     | システム設定に出る名前（例: USB 10/100/1000 LAN）|
-| デバイス     | BSD 名（例: `en9`）                              |
-| IP アドレス  | 割り当てられている IPv4 アドレス                 |
-| ルーター     | デフォルトゲートウェイ                           |
-| リンク速度   | 例: `1000baseT`。Wi-Fi は取得できないため `-`    |
-| 下り / 上り  | 通信量。メニューを開いている間だけ毎秒測る       |
+| Row         | Contents                                                        |
+| ----------- | --------------------------------------------------------------- |
+| Connection  | Wired / Wi-Fi / Other / Offline, and whether it goes via a VPN   |
+| Service     | The name shown in System Settings (e.g. USB 10/100/1000 LAN)     |
+| Device      | The BSD name (e.g. `en9`)                                        |
+| IP address  | The IPv4 address assigned to it                                  |
+| Router      | The default gateway                                              |
+| Link speed  | e.g. `1000baseT`. Wi-Fi does not report one, so it shows `-`     |
+| Down / Up   | Throughput, measured every second while the menu is open         |
 
-## 設定
+## Settings
 
-ログイン時の起動、言語（日本語 / English）、アイコン（キャラ / 記号）、通信量の単位、
-メニューに出す項目の取捨、更新の確認、版数。
+Launch at login, language (Japanese / English), icon (character or symbol),
+throughput unit, which rows appear in the menu, checking for updates, and the
+version.
 
-言語の既定は英語で、環境が日本語のときだけ日本語になります。
+The language defaults to English, and only falls back to Japanese when the
+system is set to Japanese.
 
-## 開発に使う道具
+## Development
 
 ```bash
-./probe.sh              # 判定ロジックの結果を端末で確かめる
-./probe.sh en0 en9      # 指定したデバイスの種別だけを引く
-./preview.sh <png>…     # 絵をメニューバーの実寸で並べて確かめる
-./mockup.sh             # SF Symbols の見本を作り直して開く
-./Tools/trim.py <png>…  # 絵の透明な余白を共通の枠で切り詰める
+./probe.sh              # print what the detection logic sees
+./probe.sh en0 en9      # look up the type of specific devices
+./preview.sh <png>…     # render artwork at its real menu bar size
+./mockup.sh             # regenerate the SF Symbols comparison sheet
+./Tools/trim.py <png>…  # crop transparent margins using one shared box
 ```
 
-アプリ本体にも、実際にその状態を作らずに見た目を確かめる入口があります。
+The app itself takes flags for inspecting states you cannot easily reproduce.
 
 ```bash
 ./Konechi.app/Contents/MacOS/Konechi --state wired|wifi|offline|other
-./Konechi.app/Contents/MacOS/Konechi --vpn        # 鍵バッジを出す
-./Konechi.app/Contents/MacOS/Konechi --settings   # 設定画面を開いた状態で起動
+./Konechi.app/Contents/MacOS/Konechi --vpn        # force the padlock badge
+./Konechi.app/Contents/MacOS/Konechi --settings   # open with the settings window
 ```
 
-## 絵
+## Artwork
 
-`Resources/konechi-<状態>.png` に置きます。絵が無ければ SF Symbols の記号で代用するので、
-足りない状態でも動きます。生成に使う指示は [docs/art-prompt.md](docs/art-prompt.md) にあります。
+Drop the images in `Resources/konechi-<state>.png`. Anything missing falls back
+to an SF Symbol, so the app runs with none of them present. The prompts used to
+generate them live in [docs/art-prompt.md](docs/art-prompt.md).
 
-## 仕様と、そう決めた理由
+## Design decisions
 
-[SPEC.md](./SPEC.md) を参照してください。採らなかった案とその理由も残してあります。
+See [SPEC.md](./SPEC.md), which also records the approaches that were tried and
+dropped, and why.
 
-## 注意
+## Notes
 
-- メニューバー整理アプリ（Ice など）を使っている場合、追加直後は隠れた側に入ります
-- 配布物は ad-hoc 署名です。初回は「未確認の開発元」警告が出るので、システム設定から許可してください
+- If you use a menu bar manager such as Ice, a newly added item starts out in
+  the hidden section
+- Builds are ad-hoc signed. The first launch is met with an "unidentified
+  developer" warning; allow it from System Settings
+
+> 仕様の記録（[SPEC.md](./SPEC.md)）と絵の生成に使う指示（[docs/art-prompt.md](docs/art-prompt.md)）は日本語です。
