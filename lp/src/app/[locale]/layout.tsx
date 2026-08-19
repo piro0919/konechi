@@ -1,9 +1,9 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { M_PLUS_Rounded_1c } from "next/font/google";
-import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
@@ -34,9 +34,16 @@ export async function generateMetadata({
   return {
     description: t("description"),
     icons: { icon: "/icon.png" },
+    alternates: {
+      canonical: locale === routing.defaultLocale ? "/" : `/${locale}`,
+      languages: Object.fromEntries(
+        routing.locales.map((one) => [one, one === routing.defaultLocale ? "/" : `/${one}`]),
+      ),
+    },
     metadataBase: new URL("https://konechi.kkweb.io"),
     openGraph: {
       description: t("description"),
+      url: locale === routing.defaultLocale ? "/" : `/${locale}`,
       images: ["/lp-og.png"],
       title: t("title"),
       type: "website",
