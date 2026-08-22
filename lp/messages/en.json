@@ -42,10 +42,43 @@
   },
   "footer": {
     "source": "Source",
-    "releases": "Past updates"
+    "releases": "Past updates",
+    "privacy": "Privacy"
   },
   "language": {
     "ja": "日本語",
     "en": "English"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated: August 22, 2026",
+    "intro": "Konechi looks at how your Mac is connected and puts a mark in the menu bar. That's the whole app. It has no server, no analytics, and no account.",
+    "sections": [
+      {
+        "title": "What it reads",
+        "body": "Konechi asks macOS which network route is currently active and what the interfaces on the machine are called, which is enough to tell Ethernet from Wi-Fi and to show the name of the connection. It reads configuration, not traffic — it does not see, log, or touch anything you send or receive."
+      },
+      {
+        "title": "Nothing leaves the Mac",
+        "body": "What it reads is used to draw a mark in the menu bar and is not stored, collected, or uploaded. There is nowhere for it to be uploaded to."
+      },
+      {
+        "title": "Update checks go to GitHub",
+        "body": "Konechi checks for a new version once when it starts, not on a timer. The check fetches a small file from its GitHub Releases page, so GitHub sees the request the way it sees any download, including your IP address. It is a plain file download and carries nothing about your network."
+      },
+      {
+        "title": "No analytics, ever",
+        "body": "There is no crash reporting, no usage tracking, no unique identifier, and no third-party SDK of any kind in the app."
+      },
+      {
+        "title": "You can check all of this",
+        "body": "Konechi is open source under the MIT license, so none of the above has to be taken on trust. Read the source, or open an issue if something looks wrong."
+      },
+      {
+        "title": "Changes",
+        "body": "If a future version starts doing something new with your data, this page gets updated before that version ships."
+      }
+    ],
+    "back": "Back to Konechi"
   }
 }

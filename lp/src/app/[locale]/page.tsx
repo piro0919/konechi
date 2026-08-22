@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { Link } from "@/i18n/navigation";
 import { LanguageSwitch } from "./language-switch";
 
 const REPO = "https://github.com/piro0919/konechi";
@@ -236,6 +237,12 @@ export default async function Page({ params }: PageProps) {
         >
           {t("footer.releases")}
         </a>
+        <Link
+          className="font-semibold opacity-60 hover:opacity-100"
+          href="/privacy"
+        >
+          {t("footer.privacy")}
+        </Link>
       </footer>
     </>
   );
