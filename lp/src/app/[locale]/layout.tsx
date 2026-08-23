@@ -6,6 +6,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { routing } from "@/i18n/routing";
+import { languageAlternates, localePath, ogAlternateLocales, ogLocale } from "@/i18n/urls";
 import "./globals.css";
 
 // 丸ゴシック。角の取れた字面が、キャラの太い輪郭と揃う
@@ -35,15 +36,15 @@ export async function generateMetadata({
     description: t("description"),
     icons: { icon: "/icon.png" },
     alternates: {
-      canonical: locale === routing.defaultLocale ? "/" : `/${locale}`,
-      languages: Object.fromEntries(
-        routing.locales.map((one) => [one, one === routing.defaultLocale ? "/" : `/${one}`]),
-      ),
+      canonical: localePath(locale),
+      languages: languageAlternates(),
     },
     metadataBase: new URL("https://konechi.kkweb.io"),
     openGraph: {
+      locale: ogLocale(locale),
+      alternateLocale: ogAlternateLocales(locale),
       description: t("description"),
-      url: locale === routing.defaultLocale ? "/" : `/${locale}`,
+      url: localePath(locale),
       images: ["/lp-og.png"],
       title: t("title"),
       type: "website",
