@@ -41,7 +41,8 @@ swiftc \
   -Xlinker -rpath -Xlinker @executable_path/../Frameworks \
   -o "$APP/Contents/MacOS/Konechi" \
   Sources/Localization.swift Sources/Link.swift Sources/Icon.swift \
-  Sources/Settings.swift Sources/Updater.swift Sources/SettingsWindow.swift Sources/main.swift
+  Sources/Settings.swift Sources/SelfTest.swift Sources/Updater.swift \
+  Sources/SettingsWindow.swift Sources/main.swift
 
 # アプリ本体のアイコン。元絵があれば .icns を組み立てる。
 # 無くてもビルドは通る（Finder では白紙のままになる）

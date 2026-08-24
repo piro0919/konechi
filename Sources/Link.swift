@@ -49,6 +49,20 @@ struct ByteCount {
     var sent: UInt64 = 0
 }
 
+/// 累計カウンタから毎秒の通信量を出す
+enum Throughput {
+    /// 2回のサンプルの差を秒数で割る。
+    ///
+    /// 累計値が前回より小さいときは測らずに 0 を返す。線を挿し直したときや
+    /// 経路が別のインターフェースへ移ったときにカウンタが 0 から数え直すためで、
+    /// そのまま引くと UInt64 が回り込んで 2^64 に近い値になり、あり得ない速度が出る。
+    /// 秒数が 0 以下のときも同じく測れない。
+    static func perSecond(previous: UInt64, now: UInt64, seconds: Double) -> Double {
+        guard seconds > 0, now >= previous else { return 0 }
+        return Double(now - previous) / seconds
+    }
+}
+
 // MARK: - 状態の取得
 
 enum LinkProbe {

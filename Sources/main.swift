@@ -10,6 +10,10 @@ import Network
 @main
 enum Konechi {
     static func main() {
+        // 画面を出さずに計算だけ確かめる口。直したあとはこれを通す
+        if CommandLine.arguments.contains("--selftest") {
+            exit(SelfTest.run())
+        }
         let app = NSApplication.shared
         let delegate = AppDelegate()
         app.delegate = delegate
@@ -190,8 +194,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let seconds = Date().timeIntervalSince(previous.at)
         guard seconds > 0 else { return }
 
-        let down = Double(now.received &- previous.count.received) / seconds
-        let up = Double(now.sent &- previous.count.sent) / seconds
+        let down = Throughput.perSecond(
+            previous: previous.count.received, now: now.received, seconds: seconds)
+        let up = Throughput.perSecond(
+            previous: previous.count.sent, now: now.sent, seconds: seconds)
 
         setInfo(.down, "\(L.down): \(rate(down))")
         setInfo(.up, "\(L.up): \(rate(up))")

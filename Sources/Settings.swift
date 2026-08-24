@@ -22,17 +22,20 @@ enum ThroughputUnit: String, CaseIterable {
     func formatted(_ bytesPerSecond: Double) -> String {
         switch self {
         case .bytes:
-            return scaled(bytesPerSecond, units: ["B/s", "KB/s", "MB/s", "GB/s"])
+            // ファイルの大きさと同じ尺度なので 1024 で刻む
+            return scaled(bytesPerSecond, by: 1024, units: ["B/s", "KB/s", "MB/s", "GB/s"])
         case .bits:
-            return scaled(bytesPerSecond * 8, units: ["bps", "Kbps", "Mbps", "Gbps"])
+            // 回線の速度と同じ尺度。こちらは 1000 で刻む。1Mbps は 10^6 bps であって
+            // 2^20 bps ではないので、1024 で割ると回線の公称値と食い違う
+            return scaled(bytesPerSecond * 8, by: 1000, units: ["bps", "Kbps", "Mbps", "Gbps"])
         }
     }
 
-    private func scaled(_ value: Double, units: [String]) -> String {
+    private func scaled(_ value: Double, by step: Double, units: [String]) -> String {
         var value = value
         var index = 0
-        while value >= 1024, index < units.count - 1 {
-            value /= 1024
+        while value >= step, index < units.count - 1 {
+            value /= step
             index += 1
         }
         return String(format: "%.1f %@", value, units[index])

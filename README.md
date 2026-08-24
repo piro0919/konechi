@@ -65,6 +65,7 @@ itself, and any transparency makes it place the icon on a grey plate instead.
 The app itself takes flags for inspecting states you cannot easily reproduce.
 
 ```bash
+./Konechi.app/Contents/MacOS/Konechi --selftest   # throughput and unit maths
 ./Konechi.app/Contents/MacOS/Konechi --state wired|wifi|offline|other
 ./Konechi.app/Contents/MacOS/Konechi --vpn        # force the padlock badge
 ./Konechi.app/Contents/MacOS/Konechi --settings   # open with the settings window
