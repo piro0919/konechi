@@ -11,19 +11,24 @@ enum SelfTest {
 
         // 累計カウンタから毎秒の通信量を出す
         do {
-            check(Throughput.perSecond(previous: 0, now: 2048, seconds: 2) == 1024,
-                  "差を秒数で割る")
-            check(Throughput.perSecond(previous: 1000, now: 1000, seconds: 1) == 0,
-                  "動きが無ければ 0")
+            check(
+                Throughput.perSecond(previous: 0, now: 2048, seconds: 2) == 1024,
+                "差を秒数で割る")
+            check(
+                Throughput.perSecond(previous: 1000, now: 1000, seconds: 1) == 0,
+                "動きが無ければ 0")
 
             // 線を挿し直すとカウンタは 0 から数え直す。そのまま引くと
             // UInt64 が回り込んで、あり得ない速度が出る
-            check(Throughput.perSecond(previous: 1_000_000, now: 100, seconds: 1) == 0,
-                  "カウンタが戻ったら測らない")
-            check(Throughput.perSecond(previous: 0, now: 1024, seconds: 0) == 0,
-                  "秒数が 0 なら測らない")
-            check(Throughput.perSecond(previous: 0, now: 1024, seconds: -1) == 0,
-                  "秒数が負なら測らない")
+            check(
+                Throughput.perSecond(previous: 1_000_000, now: 100, seconds: 1) == 0,
+                "カウンタが戻ったら測らない")
+            check(
+                Throughput.perSecond(previous: 0, now: 1024, seconds: 0) == 0,
+                "秒数が 0 なら測らない")
+            check(
+                Throughput.perSecond(previous: 0, now: 1024, seconds: -1) == 0,
+                "秒数が負なら測らない")
         }
 
         // 単位の付け方
@@ -32,12 +37,14 @@ enum SelfTest {
             check(ThroughputUnit.bytes.formatted(512) == "512.0 B/s", "1024 未満は繰り上げない")
             check(ThroughputUnit.bytes.formatted(1024) == "1.0 KB/s", "1024 で KB/s になる")
             check(ThroughputUnit.bytes.formatted(1024 * 1024) == "1.0 MB/s", "MB/s まで上がる")
-            check(ThroughputUnit.bytes.formatted(1024 * 1024 * 1024) == "1.0 GB/s",
-                  "GB/s まで上がる")
+            check(
+                ThroughputUnit.bytes.formatted(1024 * 1024 * 1024) == "1.0 GB/s",
+                "GB/s まで上がる")
 
             // 一番大きい単位で頭打ちにする。これ以上の桁は出さない
-            check(ThroughputUnit.bytes.formatted(1024.0 * 1024 * 1024 * 1024).hasSuffix("GB/s"),
-                  "GB/s より上には行かない")
+            check(
+                ThroughputUnit.bytes.formatted(1024.0 * 1024 * 1024 * 1024).hasSuffix("GB/s"),
+                "GB/s より上には行かない")
 
             // ビット表記は 8 倍してから、1000 刻みで上げる。回線の速度は
             // 1Mbps = 10^6 bps なので、ここを 1024 にすると公称値と食い違う
@@ -46,8 +53,9 @@ enum SelfTest {
             check(ThroughputUnit.bits.formatted(125_000) == "1.0 Mbps", "125 KB/s は 1.0 Mbps")
             check(ThroughputUnit.bits.formatted(124) == "992.0 bps", "1000 未満は繰り上げない")
             check(ThroughputUnit.bits.formatted(125_000_000) == "1.0 Gbps", "Gbps まで上がる")
-            check(ThroughputUnit.bits.formatted(1_250_000_000).hasSuffix("Gbps"),
-                  "Gbps より上には行かない")
+            check(
+                ThroughputUnit.bits.formatted(1_250_000_000).hasSuffix("Gbps"),
+                "Gbps より上には行かない")
         }
 
         // メニューに出す行の性質
