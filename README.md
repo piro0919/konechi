@@ -101,3 +101,7 @@ dropped, and why.
   developer" warning; allow it from System Settings
 
 > 仕様の記録（[SPEC.md](./SPEC.md)）と絵の生成に使う指示（[docs/art-prompt.md](docs/art-prompt.md)）は日本語です。
+
+## License
+
+MIT
