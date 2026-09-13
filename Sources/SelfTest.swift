@@ -2,6 +2,7 @@ import Foundation
 
 /// 画面を出さずに、計算だけを確かめる。`./Konechi --selftest` で走る。
 /// 触れるのは値の計算だけで、ネットワークにも設定にも触らない。
+@MainActor
 enum SelfTest {
 
     private static var failures = 0

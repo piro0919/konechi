@@ -23,6 +23,7 @@ enum Konechi {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem!
     private let menu = NSMenu()
@@ -53,9 +54,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         // 経路が変わった直後は構成データベースへの反映が僅かに遅れるため、変化の直後にもう一度読む
         pathMonitor.pathUpdateHandler = { [weak self] _ in
-            DispatchQueue.main.async {
-                self?.refresh()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { self?.refresh() }
+            // 経路の監視は別の待ち行列から呼ぶ。主へ移してから触る
+            DispatchQueue.main.async { [weak self] in
+                MainActor.assumeIsolated { self?.refresh() }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { [weak self] in
+                    MainActor.assumeIsolated { self?.refresh() }
+                }
             }
         }
         pathMonitor.start(queue: monitorQueue)
@@ -64,21 +68,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         NotificationCenter.default.addObserver(
             forName: .settingsChanged, object: nil, queue: .main
         ) { [weak self] _ in
-            guard let self else { return }
-            if self.builtLanguage != Language.resolved {
-                self.builtLanguage = Language.resolved
-                let wasVisible = self.settingsWindow.window?.isVisible ?? false
-                self.settingsWindow.close()
-                self.settingsWindow = SettingsWindowController()
-                if wasVisible { self.settingsWindow.show() }
+            // queue: .main を指定しているので主で呼ばれる。飛ばずに入る
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                if self.builtLanguage != Language.resolved {
+                    self.builtLanguage = Language.resolved
+                    let wasVisible = self.settingsWindow.window?.isVisible ?? false
+                    self.settingsWindow.close()
+                    self.settingsWindow = SettingsWindowController()
+                    if wasVisible { self.settingsWindow.show() }
+                }
+                self.buildMenu()
+                self.refresh()
             }
-            self.buildMenu()
-            self.refresh()
         }
 
         // 取りこぼしの保険
         linkTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] _ in
-            self?.refresh()
+            // Timer は主の実行ループから呼ぶ。飛ばずに入り、違ったら落とす
+            MainActor.assumeIsolated { self?.refresh() }
         }
 
         // 更新の確認は起動時に1回だけ。見つかったときだけ画面が出る
@@ -134,7 +142,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         setInfo(.up, "\(L.up): \(L.measuring)")
 
         throughputTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            self?.updateThroughput()
+            // Timer は主の実行ループから呼ぶ。飛ばずに入り、違ったら落とす
+            MainActor.assumeIsolated { self?.updateThroughput() }
         }
         // メニューを開いている間、通常の実行ループは止まるので明示的に登録する
         RunLoop.current.add(throughputTimer!, forMode: .common)
