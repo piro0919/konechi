@@ -226,7 +226,11 @@ enum LinkProbe {
                 addr, socklen_t(addr.pointee.sa_len),
                 &buffer, socklen_t(buffer.count),
                 nil, 0, NI_NUMERICHOST)
-            if result == 0 { return String(cString: buffer) }
+            if result == 0 {
+                // 配列版の String(cString:) は Swift 6 で非推奨。終端の NUL までを自分で切る
+                let bytes = buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
+                return String(decoding: bytes, as: UTF8.self)
+            }
         }
         return nil
     }
