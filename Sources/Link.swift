@@ -181,27 +181,22 @@ enum LinkProbe {
         return value.isEmpty || value == "autoselect" || value.hasPrefix("<") ? nil : value
     }
 
-    /// 指定したデバイスの送受信の累計バイト数
+    /// 指定したデバイスの送受信の累計バイト数。
+    ///
+    /// getifaddrs の if_data は 32 ビットで、4GiB を超えると 0 へ回り込む。
+    /// 1Gbps なら 30 秒ほどで一周する。sysctl の NET_RT_IFLIST2 は 64 ビットの型で返すが、
+    /// 中身は下位 32 ビットに切られ、1KiB 単位に丸められていて同じく回り込む（実機で確認）。
+    /// netstat -ib と同じ net.link.generic の ifmibdata なら、64 ビットのまま正確に取れる。
     static func byteCount(of device: String) -> ByteCount? {
-        var head: UnsafeMutablePointer<ifaddrs>?
-        guard getifaddrs(&head) == 0, head != nil else { return nil }
-        defer { freeifaddrs(head) }
+        let index = Int32(if_nametoindex(device))
+        guard index != 0 else { return nil }
 
-        var cursor = head
-        while let entry = cursor {
-            defer { cursor = entry.pointee.ifa_next }
+        var mib: [Int32] = [CTL_NET, PF_LINK, NETLINK_GENERIC, IFMIB_IFDATA, index, IFDATA_GENERAL]
+        var mibData = ifmibdata()
+        var length = MemoryLayout<ifmibdata>.size
+        guard sysctl(&mib, u_int(mib.count), &mibData, &length, nil, 0) == 0 else { return nil }
 
-            guard
-                let addr = entry.pointee.ifa_addr,
-                addr.pointee.sa_family == UInt8(AF_LINK),
-                String(cString: entry.pointee.ifa_name) == device,
-                let raw = entry.pointee.ifa_data
-            else { continue }
-
-            let data = raw.assumingMemoryBound(to: if_data.self).pointee
-            return ByteCount(received: UInt64(data.ifi_ibytes), sent: UInt64(data.ifi_obytes))
-        }
-        return nil
+        return ByteCount(received: mibData.ifmd_data.ifi_ibytes, sent: mibData.ifmd_data.ifi_obytes)
     }
 
     /// BSD 名から接続の種類と表示名を引く

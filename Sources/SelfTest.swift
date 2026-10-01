@@ -24,6 +24,12 @@ enum SelfTest {
             check(
                 Throughput.perSecond(previous: 1_000_000, now: 100, seconds: 1) == 0,
                 "カウンタが戻ったら測らない")
+            // カウンタは 64 ビットで読む。4GiB をまたいでも普通に差が取れる
+            check(
+                Throughput.perSecond(
+                    previous: UInt64(UInt32.max) - 99, now: UInt64(UInt32.max) + 925, seconds: 1)
+                    == 1024,
+                "4GiB をまたいでも測れる")
             check(
                 Throughput.perSecond(previous: 0, now: 1024, seconds: 0) == 0,
                 "秒数が 0 なら測らない")

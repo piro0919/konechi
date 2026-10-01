@@ -84,7 +84,9 @@
 - リンク速度は `ifconfig` の `media:` 行を読む。ioctl の `SIOCGIFMEDIA` は定数が Swift へ取り込めない。
   メニューを開いたときにしか呼ばないので、外部コマンドの費用は問題にならない。
   Wi-Fi は `autoselect` としか出ないため、速度なしとして扱う
-- 通信量は `getifaddrs` の `if_data` から累計バイト数を読み、差分を取る。`netstat -ibn` と一致を確認済み
+- 通信量は sysctl の `net.link.generic`（`IFMIB_IFDATA`）が返す `ifmibdata` の 64 ビットの累計バイト数を読み、差分を取る。`netstat -ib` と一致を確認済み。
+  `getifaddrs` の `if_data` は 32 ビットで 4GiB ごとに回り込み、`NET_RT_IFLIST2` の `if_data64` も中身は下位 32 ビットに切られ 1KiB 単位に丸められていたため採らない。
+  累計値が前回より小さいとき（線の挿し直しなどでカウンタが戻ったとき）は、その回は測らず 0 とする
 - メニューバーの常駐は SwiftUI の `MenuBarExtra` ではなく AppKit で組む。
   メニューの中身は OS 側のメニューとして描かれるため SwiftUI からは開閉の通知が取れず、
   「通信量はメニューを開いている間だけ測る」が実現できない
