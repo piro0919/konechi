@@ -79,7 +79,7 @@
 ### 判定の仕方（実装で裏を取った内容）
 
 - 主経路が VPN のトンネルで有線でも Wi-Fi でもないときは、`Setup:/Network/Global/IPv4` の
-  `ServiceOrder` を優先順に見て、`State:/Network/Service/<id>/IPv4` から使用中のインターフェースを引き、
+  `ServiceOrder` を優先順に見て、`State:/Network/Service/<id>/IPv4`（無ければ `IPv6`）から使用中のインターフェースを引き、
   最初に見つかった有線か Wi-Fi を下の物理経路として採る
 - リンク速度は `ifconfig` の `media:` 行を読む。ioctl の `SIOCGIFMEDIA` は定数が Swift へ取り込めない。
   メニューを開いたときにしか呼ばないので、外部コマンドの費用は問題にならない。
@@ -92,6 +92,8 @@
 ### 判定の仕方
 
 - 構成データベース（`State:/Network/Global/IPv4`）の `PrimaryInterface` を読み、その種別が Ethernet か IEEE80211 かで決める
+- IPv4 に主経路が無いときは `State:/Network/Global/IPv6` を見る。IPv4 だけを見ると、IPv6 だけの網で繋がっているのに「オフライン」と出る。
+  両方あるときは IPv4 を採る。IP アドレスの行も IPv4 を優先し、無いときだけリンクローカル以外の IPv6 アドレスを出す
 - アイコンの見た目や `networksetup` の並び順からは推測しない。`route get default` と同じ経路を見る
 
 ### メニューを開いたときに出すもの

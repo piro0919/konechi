@@ -59,6 +59,33 @@ enum SelfTest {
                 "Gbps より上には行かない")
         }
 
+        // 主経路の選び方
+        do {
+            let v4: [String: Any] = ["PrimaryInterface": "en9", "Router": "10.0.0.1"]
+            let v6: [String: Any] = ["PrimaryInterface": "en0", "Router": "fe80::1"]
+
+            check(
+                LinkProbe.primaryRoute(ipv4: v4, ipv6: v6).map { $0.device == "en9" } == true,
+                "両方あれば IPv4 を採る")
+            check(
+                LinkProbe.primaryRoute(ipv4: v4, ipv6: v6)?.router == "10.0.0.1",
+                "ルーターも IPv4 側から取る")
+
+            // IPv6 だけの網で「オフライン」と出ないこと
+            check(
+                LinkProbe.primaryRoute(ipv4: nil, ipv6: v6).map { $0.device == "en0" } == true,
+                "IPv4 が無ければ IPv6 を見る")
+            check(
+                LinkProbe.primaryRoute(ipv4: [:], ipv6: v6).map { $0.device == "en0" } == true,
+                "IPv4 に主経路が無ければ IPv6 を見る")
+            check(LinkProbe.primaryRoute(ipv4: nil, ipv6: nil) == nil, "どちらも無ければオフライン")
+
+            check(
+                LinkProbe.preferredIPv6(["fe80::1%en0", "2001:db8::5"]) == "2001:db8::5",
+                "リンクローカルは出さない")
+            check(LinkProbe.preferredIPv6(["FE80::1%en0"]) == nil, "リンクローカルだけなら出さない")
+        }
+
         // メニューに出す行の性質
         do {
             check(InfoRow.kind.isFixed, "接続の行は隠せない")

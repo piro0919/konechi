@@ -72,16 +72,20 @@ enum LinkProbe {
 
         guard
             let store = SCDynamicStoreCreate(nil, "konechi" as CFString, nil, nil),
-            let global = SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString)
-                as? [String: Any],
-            let device = global["PrimaryInterface"] as? String
+            let primary = primaryRoute(
+                ipv4: SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString)
+                    as? [String: Any],
+                ipv6: SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv6" as CFString)
+                    as? [String: Any])
         else {
             return status
         }
 
+        let device = primary.device
         status.device = device
-        status.router = global["Router"] as? String ?? "-"
-        status.ipAddress = ipv4Address(of: device) ?? "-"
+        status.router = primary.router ?? "-"
+        // IPv4 があればそれを出す。IPv6 だけの網では、そちらの番地で代える
+        status.ipAddress = ipv4Address(of: device) ?? ipv6Address(of: device) ?? "-"
 
         let described = describe(device: device)
         status.kind = described.kind
@@ -101,7 +105,22 @@ enum LinkProbe {
         return status
     }
 
-    /// ネットワークサービスの優先順に見て、IPv4 アドレスを持つ最初の物理経路を返す。
+    /// 主経路のデバイスとルーターを選ぶ。IPv4 を先に見て、無ければ IPv6 を見る。
+    ///
+    /// IPv4 しか見ないと、IPv6 だけの網では繋がっているのに「オフライン」と出る。
+    /// 両方あるときは IPv4 を採る。これまでの表示と変わらないようにするため。
+    static func primaryRoute(ipv4: [String: Any]?, ipv6: [String: Any]?) -> (
+        device: String, router: String?
+    )? {
+        for global in [ipv4, ipv6] {
+            if let device = global?["PrimaryInterface"] as? String, !device.isEmpty {
+                return (device, global?["Router"] as? String)
+            }
+        }
+        return nil
+    }
+
+    /// ネットワークサービスの優先順に見て、IP アドレスを持つ最初の物理経路を返す。
     /// VPN のトンネルが主経路になっているときに、その下を知るために使う。
     static func underlyingPhysical() -> (kind: LinkKind, serviceName: String, device: String)? {
         guard
@@ -112,11 +131,13 @@ enum LinkProbe {
         else { return nil }
 
         for serviceID in order {
-            let key = "State:/Network/Service/\(serviceID)/IPv4" as CFString
-            guard
-                let state = SCDynamicStoreCopyValue(store, key) as? [String: Any],
-                let name = state["InterfaceName"] as? String
-            else { continue }
+            // IPv6 だけのサービスも拾う。主経路の判定と揃えるため
+            let name = ["IPv4", "IPv6"].lazy.compactMap { family in
+                let key = "State:/Network/Service/\(serviceID)/\(family)" as CFString
+                return (SCDynamicStoreCopyValue(store, key) as? [String: Any])?["InterfaceName"]
+                    as? String
+            }.first
+            guard let name else { continue }
 
             let described = describe(device: name)
             if described.kind == .wired || described.kind == .wifi {
@@ -207,17 +228,33 @@ enum LinkProbe {
     }
 
     private static func ipv4Address(of device: String) -> String? {
+        addresses(of: device, family: AF_INET).first
+    }
+
+    /// IPv6 だけの網で、IPv4 の代わりに出す番地
+    private static func ipv6Address(of device: String) -> String? {
+        preferredIPv6(addresses(of: device, family: AF_INET6))
+    }
+
+    /// IPv6 の番地から表示するものを選ぶ。リンクローカル（fe80::）はその線の中でしか
+    /// 通じず、どのインターフェースにも必ず付くので、繋がっている印にはならない。除く
+    static func preferredIPv6(_ addresses: [String]) -> String? {
+        addresses.first { !$0.lowercased().hasPrefix("fe80:") }
+    }
+
+    private static func addresses(of device: String, family: Int32) -> [String] {
         var head: UnsafeMutablePointer<ifaddrs>?
-        guard getifaddrs(&head) == 0, let first = head else { return nil }
+        guard getifaddrs(&head) == 0, let first = head else { return [] }
         defer { freeifaddrs(head) }
 
+        var found: [String] = []
         var cursor: UnsafeMutablePointer<ifaddrs>? = first
         while let entry = cursor {
             defer { cursor = entry.pointee.ifa_next }
 
             guard
                 let addr = entry.pointee.ifa_addr,
-                addr.pointee.sa_family == UInt8(AF_INET),
+                addr.pointee.sa_family == UInt8(family),
                 String(cString: entry.pointee.ifa_name) == device
             else { continue }
 
@@ -229,9 +266,9 @@ enum LinkProbe {
             if result == 0 {
                 // 配列版の String(cString:) は Swift 6 で非推奨。終端の NUL までを自分で切る
                 let bytes = buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }
-                return String(decoding: bytes, as: UTF8.self)
+                found.append(String(decoding: bytes, as: UTF8.self))
             }
         }
-        return nil
+        return found
     }
 }

@@ -6,7 +6,8 @@ A tiny macOS menu bar app that shows, at a glance, whether your Mac is on
 The stock macOS menu bar only tells you about Wi-Fi — nothing indicates that a
 cable is plugged in. Konechi does not guess from what the menu bar looks like.
 It reads the **primary interface of the default route** from the system
-configuration database (`State:/Network/Global/IPv4`) and decides from that
+configuration database (`State:/Network/Global/IPv4`, or `IPv6` on an
+IPv6-only network) and decides from that
 interface's type. It is looking at the same route `route get default` reports,
 so what you see is the link actually carrying your traffic.
 
@@ -32,7 +33,7 @@ open Konechi.app
 | Connection  | Wired / Wi-Fi / Other / Offline, and whether it goes via a VPN   |
 | Service     | The name shown in System Settings (e.g. USB 10/100/1000 LAN)     |
 | Device      | The BSD name (e.g. `en9`)                                        |
-| IP address  | The IPv4 address assigned to it                                  |
+| IP address  | The IPv4 address assigned to it (IPv6 if it has no IPv4)         |
 | Router      | The default gateway                                              |
 | Link speed  | e.g. `1000baseT`. Wi-Fi does not report one, so it shows `-`     |
 | Down / Up   | Throughput, measured every second while the menu is open         |
