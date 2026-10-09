@@ -6,7 +6,12 @@ its release notes, and stops if that section is missing or empty — so before r
 
 Versions up to v0.1.2 predate this file; their history is in `git log`.
 
-## [Unreleased]
+## [0.1.4] - 2026-10-09
+
+### Changed
+
+- The update window now follows the Mac's language, so it appears in Japanese on a Japanese
+  Mac. It was always in English before.
 
 ### Fixed
 
