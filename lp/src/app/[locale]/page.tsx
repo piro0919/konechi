@@ -1,5 +1,5 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { LanguageSwitch } from "./language-switch";
@@ -95,9 +95,7 @@ export default async function Page({ params }: PageProps) {
             <h1 className="text-balance text-4xl font-black leading-[1.35] tracking-tight sm:text-[2.75rem]">
               <span className="marker">{tagline}</span>
             </h1>
-            <p className="max-w-md text-lg leading-relaxed opacity-80">
-              {t("hero.lead")}
-            </p>
+            <p className="max-w-md text-lg leading-relaxed opacity-80">{t("hero.lead")}</p>
             <div className="flex flex-col items-center gap-3 lg:items-start">
               <DownloadButton>{t("hero.download")}</DownloadButton>
               <p className="text-sm opacity-60">{t("hero.requirement")}</p>
@@ -190,12 +188,8 @@ export default async function Page({ params }: PageProps) {
                 />
               </div>
               <div className="flex flex-[1.3] flex-col gap-3 text-center sm:text-left">
-                <h3 className="font-bold text-xl">
-                  {t(`features.${key}.title`)}
-                </h3>
-                <p className="leading-relaxed opacity-80">
-                  {t(`features.${key}.body`)}
-                </p>
+                <h3 className="font-bold text-xl">{t(`features.${key}.title`)}</h3>
+                <p className="leading-relaxed opacity-80">{t(`features.${key}.body`)}</p>
               </div>
             </div>
           ))}
@@ -231,18 +225,18 @@ export default async function Page({ params }: PageProps) {
         <a className="font-semibold opacity-60 hover:opacity-100" href={REPO}>
           {t("footer.source")}
         </a>
-        <a
-          className="font-semibold opacity-60 hover:opacity-100"
-          href={`${REPO}/releases`}
-        >
+        <a className="font-semibold opacity-60 hover:opacity-100" href={`${REPO}/releases`}>
           {t("footer.releases")}
         </a>
-        <Link
-          className="font-semibold opacity-60 hover:opacity-100"
-          href="/privacy"
-        >
+        <Link className="font-semibold opacity-60 hover:opacity-100" href="/privacy">
           {t("footer.privacy")}
         </Link>
+        <a
+          className="font-semibold opacity-60 hover:opacity-100"
+          href="https://buymeacoffee.com/piro0919"
+        >
+          Buy Me a Coffee
+        </a>
       </footer>
     </>
   );
